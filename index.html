@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Object Dragger</title>
+    <!-- Style objects, could be moved into separate css file -->
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+      }
+      main {
+        width: 100%;
+        height: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      #object-row {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .draggable-object {
+        display: inline-block;
+        background-color: red;
+        border: 1px solid black;
+        border-radius: 50%;
+        height: 2vw;
+        max-height: 60px;
+        width: 2vw;
+        max-width: 60px;
+      }
+      .draggable-object:hover {
+        cursor: pointer;
+      }
+      .draggable-object:hover {
+        cursor: pointer;
+      }
+      .draggable-object:active {
+        cursor: grab;
+      }
+      #drag-space {
+        width: 100%;
+        flex: 1 1 0;
+        border: 3px solid black;
+        border-radius: 30px;
+        box-sizing: border-box;
+        background-image: url("worldmap.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+      }
+    </style>
+    <!-- Javascript for interaction, could be moved to separate .js file -->
+    <script>
+      // Save currently locked object
+      let lockedObject = null;
+
+      const moveObject = (e) => {
+        lockedObject.style.position = "absolute";
+        // Set "top" and "left" positions as percentages for responsiveness
+        lockedObject.style.top = `${(100 * e.pageY) / window.innerHeight}%`;
+        lockedObject.style.left = `${(100 * e.pageX) / window.innerWidth}%`;
+      };
+
+      const lockObject = (e) => {
+        lockedObject = e.target;
+        // Add event listeners to window
+        window.addEventListener("mousemove", moveObject);
+        window.addEventListener("mouseup", releaseObject);
+        // Always show a grab cursor after object has been locked
+        const body = document.querySelector("body");
+        body.style.cursor = "grab";
+      };
+      const releaseObject = () => {
+        // Reset lockedObject
+        lockedObject = null;
+        // Remove "global" event listeners
+        window.removeEventListener("mousemove", moveObject);
+        window.removeEventListener("mouseup", releaseObject);
+        // Reset cursor
+        const body = document.querySelector("body");
+        body.style.cursor = "default";
+      };
+
+      const addDraggableObjects = (N) => {
+        // Get object row DOM element
+        const objectRow = document.querySelector("#object-row");
+        // Create draggable objects
+        for (let i = 0; i < N; i++) {
+          const draggableObject = document.createElement("DIV");
+          draggableObject.classList.add("draggable-object");
+          draggableObject.addEventListener("mousedown", (e) => lockObject(e));
+          objectRow.appendChild(draggableObject);
+        }
+      };
+      document.addEventListener("DOMContentLoaded", function (event) {
+        // Add draggable objects, specify number of objects
+        addDraggableObjects(10);
+      });
+    </script>
+  </head>
+  <body>
+    <main>
+      <div id="object-row"></div>
+      <div id="drag-space"></div>
+    </main>
+  </body>
+</html>
