@@ -30,6 +30,7 @@
         background-color: red;
         border: 1px solid black;
         border-radius: 50%;
+        box-sizing: border-box;
         height: 2vw;
         max-height: 60px;
         width: 2vw;
@@ -51,9 +52,7 @@
         border-radius: 30px;
         box-sizing: border-box;
         background-image: url("worldmap.png");
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center center;
+        background-size: 100% 100%;
       }
     </style>
     <!-- Javascript for interaction, could be moved to separate .js file -->
@@ -70,6 +69,8 @@
 
       const lockObject = (e) => {
         lockedObject = e.target;
+        // Change transition time
+        lockedObject.style.transitionDuration = "0s";
         // Add event listeners to window
         window.addEventListener("mousemove", moveObject);
         window.addEventListener("mouseup", releaseObject);
@@ -78,6 +79,19 @@
         body.style.cursor = "grab";
       };
       const releaseObject = () => {
+        // Check if object is outside of drag-space and reset position if it is the case
+        const dragSpace = document.querySelector("#drag-space");
+        const dragSpacePos = dragSpace.getBoundingClientRect();
+        const objectPos = lockedObject.getBoundingClientRect();
+
+        if (
+          dragSpacePos.top > objectPos.top ||
+          dragSpacePos.bottom < objectPos.bottom ||
+          dragSpacePos.left > objectPos.left ||
+          dragSpacePos.right < objectPos.right
+        ) {
+          lockedObject.style.position = "static";
+        }
         // Reset lockedObject
         lockedObject = null;
         // Remove "global" event listeners
